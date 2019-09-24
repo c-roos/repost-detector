@@ -3,38 +3,7 @@ import urllib.request
 import numpy as np
 import cv2 as cv
 
-
-# takes an integer and returns a list of bits
-def intToBitList(n, size):
-    return [1 if digit=='1' else 0 for digit in f"{n:0{size}b}"]
-
-
-# takes an array of bits and return the integer representation
-def bitArrayToInt(a):
-    out = 0
-    for bit in a:
-        out = (out << 1) | bit
-    return out
-
-    
-# takes a row of 11 integers from the database and combines them into a list of 64 bits
-def combineRow(row):
-    l = []
-    for integer in row[:-1]:
-        l.extend(intToBitList(integer, 6))
-    l.extend(intToBitList(row[-1], 4))
-    return l
-
-    
-# takes an array of 64 bits and splits it into a list of 11 integers to store in the database (10x6, 1x4 bits)
-def splitBitArray(a):
-    integers = []
-    for i in range(0, 60, 6):
-        integers.append(bitArrayToInt(a[i:i+6]))
-    integers.append(bitArrayToInt(a[60:]))
-    return integers
-
-    
+  
 # takes a path to an image file and returns a difference hash for the image
 def hash(image):
     if image is None:
