@@ -21,7 +21,13 @@ def hash(image):
 def hammingDistance(array1, array2):
     return np.count_nonzero(array1 != array2)
     
-    
+
+# convert buffer directly to opencv image format in memory
+def get_opencv_img_from_buffer(buffer):
+    bytes_as_np_array = np.frombuffer(buffer.read(), dtype=np.uint8)
+    return cv.imdecode(bytes_as_np_array, cv.IMREAD_COLOR)
+
+
 def main():
     # Reddit connection
     reddit = praw.Reddit(config.user)
@@ -46,11 +52,7 @@ def main():
         except:
             continue
         
-        download = response.read()
-        f_name = 'temp' + url[-4:]
-        with open(f_name, 'wb') as f:
-            f.write(download)
-        img = cv.imread(f_name)
+        img = get_opencv_img_from_buffer(response)
         hash_array = hash(img)
         if hash_array is None:
             continue
@@ -63,7 +65,7 @@ def main():
             if differences <= 4:
                 matches.extend(hashes[key])
         
-        # I've had issues with reddit returning the same sumission multiple times
+        # I've had issues with reddit returning the same submission multiple times
         # so I have to check for duplicates
         duplicate = False
         if len(matches) > 0:
